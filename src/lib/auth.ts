@@ -2,6 +2,9 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import db from "@/db"; // your drizzle instance
 import { admin, emailOTP, phoneNumber, username } from "better-auth/plugins";
+import { sendEmail } from "@/app/api/send/route";
+import { EmailTemplate } from "@/components/email-template";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -11,6 +14,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
+    nextCookies(),
     username(),
     phoneNumber({
       sendOTP: ({ phoneNumber, code }, request) => {
@@ -18,8 +22,15 @@ export const auth = betterAuth({
       },
     }),
     emailOTP({
-      async sendVerificationOTP({ email, otp, type }) {
-        // Implement the sendVerificationOTP method to send the OTP to the user's email address
+      overrideDefaultEmailVerification: true,
+      async sendVerificationOTP({ otp, email }) {
+        await sendEmail({
+          to: email,
+          subject: "Verify your email address",
+          text: EmailTemplate({
+            otpCode: otp,
+          }),
+        });
       },
     }),
     admin(),
