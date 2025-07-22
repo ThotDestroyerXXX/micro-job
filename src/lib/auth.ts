@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import db from "@/db"; // your drizzle instance
 import { admin, emailOTP, phoneNumber, username } from "better-auth/plugins";
-import { sendEmail } from "@/app/api/send/route";
+import { sendEmail } from "@/lib/send-email";
 import { EmailTemplate } from "@/components/email-template";
 import { nextCookies } from "better-auth/next-js";
 
