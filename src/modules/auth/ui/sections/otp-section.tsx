@@ -15,13 +15,13 @@ import {
 import { useOTPForm } from "../../hooks/use-otp-form";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
-export default function OTPSection({ email }: Readonly<{ email: string }>) {
+export default function OTPSection() {
   const { form, onSubmit, isLoading } = useOTPForm();
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((data) => onSubmit(data, email))}
+        onSubmit={form.handleSubmit((data) => onSubmit(data))}
         className='flex flex-col items-center gap-12'
       >
         <FormField

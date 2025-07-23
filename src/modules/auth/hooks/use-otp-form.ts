@@ -1,6 +1,7 @@
+import { authClient } from "@/lib/auth-client";
 import { verifyOTP } from "@/lib/server-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -17,7 +18,11 @@ export function useOTPForm() {
       pin: "",
     },
   });
-  async function onSubmit(data: z.infer<typeof FormSchema>, email: string) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const email = (await authClient.getSession()).data?.user.email;
+    if (!email) {
+      redirect("/register");
+    }
     const response = await verifyOTP(email, data.pin);
     if (response.status) {
       router.push("/");

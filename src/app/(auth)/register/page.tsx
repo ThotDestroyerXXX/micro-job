@@ -1,7 +1,7 @@
 import RegisterView from "@/modules/auth/ui/views/register-view";
 
-const Register = () => {
+const Page = () => {
   return <RegisterView />;
 };
 
-export default Register;
+export default Page;

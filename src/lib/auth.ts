@@ -5,6 +5,7 @@ import { admin, emailOTP, phoneNumber, username } from "better-auth/plugins";
 import { sendEmail } from "@/lib/send-email";
 import { EmailTemplate } from "@/components/email-template";
 import { nextCookies } from "better-auth/next-js";
+import { ac, admin as administrator, worker, poster } from "@/lib/permission";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -33,7 +34,15 @@ export const auth = betterAuth({
         });
       },
     }),
-    admin(),
+    admin({
+      ac,
+      roles: {
+        admin: administrator,
+        worker,
+        poster,
+      },
+      defaultRole: "worker",
+    }),
   ],
 });
 

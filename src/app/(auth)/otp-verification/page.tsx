@@ -1,28 +1,18 @@
 import { HydrateClient } from "@/app/trpc/server";
-import { auth } from "@/lib/auth";
 import transporter from "@/lib/nodemailer";
+import { sendVerificationOTP } from "@/lib/server-auth";
 import OTPVerificationView from "@/modules/auth/ui/views/otp-verification-view";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-const OTPVerification = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
+const Page = async () => {
   await transporter.verify();
 
-  if (!session) {
-    redirect("/register");
-  } else if (session.user.emailVerified) {
-    redirect("/");
-  }
+  await sendVerificationOTP();
 
   return (
     <HydrateClient>
-      <OTPVerificationView userEmail={session.user.email} />
+      <OTPVerificationView />
     </HydrateClient>
   );
 };
 
-export default OTPVerification;
+export default Page;

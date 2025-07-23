@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 import { auth } from "./auth";
 import { headers } from "next/headers";
 
@@ -27,9 +28,50 @@ export async function signUp({
       displayUsername,
       rememberMe: true,
     },
+    asResponse: true,
   });
 
-  return response;
+  if (response.ok) {
+    return redirect("/otp-verification");
+  } else {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to sign in");
+  }
+}
+
+export async function signIn({
+  username,
+  password,
+}: {
+  username: string;
+  password: string;
+}) {
+  const response = await auth.api.signInUsername({
+    body: {
+      username,
+      password,
+      rememberMe: true,
+    },
+    asResponse: true,
+  });
+
+  if (response.ok) {
+    return redirect("/");
+  } else {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to sign in");
+  }
+}
+
+export async function signOut() {
+  const response = await auth.api.signOut({
+    // This endpoint requires session cookies.
+    headers: await headers(),
+  });
+
+  if (response.success) {
+    return redirect("/login");
+  }
 }
 
 export async function sendVerificationOTP() {
@@ -39,7 +81,9 @@ export async function sendVerificationOTP() {
     });
 
     if (!session) {
-      return { success: false, error: "No session found" };
+      redirect("/register");
+    } else if (session.user.emailVerified) {
+      redirect("/");
     }
 
     await auth.api.sendVerificationOTP({
