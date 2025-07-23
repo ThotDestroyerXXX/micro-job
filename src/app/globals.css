@@ -123,4 +123,8 @@
   h1 {
     @apply text-4xl font-semibold;
   }
+
+  span {
+    @apply text-sm text-gray-500;
+  }
 }

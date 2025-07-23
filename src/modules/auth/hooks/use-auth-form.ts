@@ -21,14 +21,12 @@ export const useRegisterForm = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      phoneNumber: "",
-      role: undefined,
     },
   });
 
   const onSubmit = async (values: RegisterFormData) => {
     try {
-      const { firstName, lastName, username, email, password, role } = values;
+      const { firstName, lastName, username, email, password } = values;
       await signUp({
         name: firstName + " " + lastName,
         username: username,
@@ -36,9 +34,6 @@ export const useRegisterForm = () => {
         email: email,
         password,
       });
-
-      // TODO: Store the role information in user profile/database
-      console.log("User selected role:", role);
     } catch (error) {
       // Don't show error if it's a redirect
       if (!isRedirectError(error)) {

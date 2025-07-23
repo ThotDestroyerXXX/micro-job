@@ -5,7 +5,6 @@ import { FormFieldWrapper } from "../components/form-field-wrapper";
 import { AuthCard } from "../components/auth-card";
 import { useRegisterForm } from "../../hooks/use-auth-form";
 import { REGISTER_FORM_FIELDS } from "../../config/auth-form.config";
-import { RoleDropdown } from "../components/role-dropdown";
 
 export default function RegisterForm() {
   const { form, onSubmit, isLoading } = useRegisterForm();
@@ -31,12 +30,6 @@ export default function RegisterForm() {
                 type={field.type}
               />
             ))}
-            <RoleDropdown
-              control={form.control}
-              name='role'
-              label='I am a'
-              placeholder='Select your role'
-            />
             <Button
               type='submit'
               className='w-full col-span-2'

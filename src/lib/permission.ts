@@ -13,10 +13,6 @@ export const admin = ac.newRole({
   job: ["create", "read", "update", "delete", "updateOwn", "deleteOwn"],
 });
 
-export const worker = ac.newRole({
-  job: ["read"],
-});
-
-export const poster = ac.newRole({
+export const user = ac.newRole({
   job: ["create", "read", "updateOwn", "deleteOwn"],
 });

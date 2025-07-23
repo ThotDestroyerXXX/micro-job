@@ -28,10 +28,6 @@ export const registerSchema = loginSchema
     lastName: z.string().min(1, "Last name is required"),
     email: z.email("Invalid email address"),
     confirmPassword: z.string(),
-    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
-    role: z.enum(["worker", "seeker"], {
-      message: "Please select your role",
-    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -65,11 +61,5 @@ export const REGISTER_FORM_FIELDS = [
     label: "Confirm Password",
     placeholder: "••••••••",
     type: "password",
-  },
-  {
-    name: "phoneNumber" as const,
-    label: "Phone Number",
-    placeholder: "+1234567890",
-    type: "tel",
   },
 ] as const;

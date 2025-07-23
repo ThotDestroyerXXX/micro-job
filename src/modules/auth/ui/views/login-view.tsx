@@ -3,7 +3,7 @@ import LoginForm from "../sections/login-form";
 
 export default function LoginView() {
   return (
-    <div className='justify-center items-center flex h-screen p-4'>
+    <div className='justify-center items-center h-screen flex p-4'>
       <Image
         src={"/images/auth-image.jpg"}
         alt='image'

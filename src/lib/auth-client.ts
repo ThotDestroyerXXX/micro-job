@@ -1,16 +1,19 @@
 import {
   adminClient,
   emailOTPClient,
+  inferAdditionalFields,
   phoneNumberClient,
   usernameClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
-import { ac, admin as administrator, worker, poster } from "@/lib/permission";
+import { ac, admin as administrator, user } from "@/lib/permission";
+import { auth } from "./auth";
 
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   plugins: [
+    inferAdditionalFields<typeof auth>(),
     usernameClient(),
     phoneNumberClient(),
     emailOTPClient(),
@@ -18,8 +21,7 @@ export const authClient = createAuthClient({
       ac,
       roles: {
         admin: administrator,
-        worker,
-        poster,
+        user: user,
       },
     }),
   ],

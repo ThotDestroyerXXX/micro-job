@@ -1,4 +1,22 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  decimal,
+  pgEnum,
+  time,
+} from "drizzle-orm/pg-core";
+
+export const dayEnum = pgEnum("day", [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -22,6 +40,12 @@ export const user = pgTable("user", {
   banned: boolean("banned"),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  bio: text("bio"),
+  rating: decimal("rating", { precision: 3, scale: 2 }),
+  location: text("location"),
+  latitude: decimal("latitude", { precision: 10, scale: 6 }),
+  longitude: decimal("longitude", { precision: 10, scale: 6 }),
+  isAcceptingJobs: boolean("is_accepting_jobs").$defaultFn(() => true),
 });
 
 export const session = pgTable("session", {
@@ -61,6 +85,21 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+});
+
+export const user_availability = pgTable("user_availability", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  day_of_week: dayEnum("day_of_week").notNull(),
+  isBusy: boolean("is_busy").$defaultFn(() => true),
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date()
   ),

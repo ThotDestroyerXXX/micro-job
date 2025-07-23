@@ -1,4 +1,4 @@
-import { HydrateClient } from "@/app/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 import transporter from "@/lib/nodemailer";
 import { sendVerificationOTP } from "@/lib/server-auth";
 import OTPVerificationView from "@/modules/auth/ui/views/otp-verification-view";

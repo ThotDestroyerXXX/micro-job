@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ReactScan } from "@/components/react-scan";
-import { TRPCProvider } from "./trpc/client";
-import Navbar from "@/components/navbar";
+import { TRPCProvider } from "@/trpc/client";
 import localFont from "next/font/local";
 
 const geistSans = Geist({
@@ -38,7 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${baumans.className} antialiased`}
       >
         <TRPCProvider>
-          {children}
+          <div className='w-full max-w-7xl mx-auto'>{children}</div>
           <Toaster richColors expand={true} visibleToasts={6} />
         </TRPCProvider>
       </body>

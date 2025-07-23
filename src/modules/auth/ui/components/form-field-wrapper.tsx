@@ -10,7 +10,7 @@ import { Control, FieldPath, FieldValues } from "react-hook-form";
 
 interface FormFieldWrapperProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > {
   control: Control<TFieldValues>;
   name: TName;
