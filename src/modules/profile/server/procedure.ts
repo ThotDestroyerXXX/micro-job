@@ -105,4 +105,21 @@ export const profileRouter = createTRPCRouter({
         .where(eq(user.id, userId))
         .execute();
     }),
+
+  updateUserSkills: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        skills: z.array(z.object({ name: z.string(), years: z.number() })),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { userId, skills } = input;
+
+      await db
+        .update(user)
+        .set({ skills })
+        .where(eq(user.id, userId))
+        .execute();
+    }),
 });

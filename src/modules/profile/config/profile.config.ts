@@ -40,3 +40,28 @@ export const BASIC_INFORMATION_FORM_FIELDS = [
     type: "text",
   },
 ] as const;
+
+export const userSkillsSchema = z.object({
+  skills: z.array(
+    z.object({
+      name: z.string().min(1, "Skill name is required"),
+      years: z.number().min(1, "Years of experience must be at least 1"),
+    })
+  ),
+});
+export type UserSkillsFormData = z.infer<typeof userSkillsSchema>;
+
+export const USER_SKILLS_FORM_FIELDS = [
+  {
+    name: "skills" as const,
+    label: "Skills",
+    placeholder: "e.g. JavaScript, React",
+    type: "text",
+  },
+  {
+    name: "years" as const,
+    label: "Years of Experience",
+    placeholder: "e.g. 3",
+    type: "number",
+  },
+] as const;

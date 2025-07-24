@@ -42,15 +42,17 @@ export const auth = betterAuth({
         required: false,
         default: true,
       },
+      skills: {
+        type: "string[]",
+        required: false,
+      },
     },
   },
   plugins: [
     nextCookies(),
     username(),
     phoneNumber({
-      sendOTP: ({ phoneNumber, code }, request) => {
-        // Implement sending OTP code via SMS
-      },
+      sendOTP: async ({ phoneNumber, code }) => {},
     }),
     emailOTP({
       overrideDefaultEmailVerification: true,

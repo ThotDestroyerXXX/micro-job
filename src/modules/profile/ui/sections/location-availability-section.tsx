@@ -30,7 +30,9 @@ export default function LocationAvailabilitySection({
         <div>
           <h4 className='font-medium mb-2'>Service Area</h4>
           <p className='text-gray-600'>
-            {user.location ?? "No location specified."}
+            {user.location && user.location.length > 0
+              ? user.location
+              : "No location specified."}
           </p>
         </div>
 

@@ -5,7 +5,7 @@ import {
   boolean,
   decimal,
   pgEnum,
-  time,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const dayEnum = pgEnum("day", [
@@ -46,6 +46,7 @@ export const user = pgTable("user", {
   latitude: decimal("latitude", { precision: 10, scale: 6 }),
   longitude: decimal("longitude", { precision: 10, scale: 6 }),
   isAcceptingJobs: boolean("is_accepting_jobs").$defaultFn(() => true),
+  skills: jsonb("skills").$type<{ name: string; years: number }[]>(),
 });
 
 export const session = pgTable("session", {

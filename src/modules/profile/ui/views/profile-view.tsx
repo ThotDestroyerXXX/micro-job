@@ -20,7 +20,10 @@ export default function ProfileView({
           }}
         />
         <SkillSection
-          profileData={{ skills: ["JavaScript", "React", "Node.js"] }}
+          profileData={
+            user.skills as unknown as { name: string; years: number }[]
+          }
+          userId={user.id}
         />
         <LocationAvailabilitySection user={user} />
         <ContactInfoSection

@@ -103,6 +103,51 @@ export async function sendVerificationOTP() {
   }
 }
 
+export async function sendPhoneVerificationOTP(phoneNumber: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      redirect("/register");
+    }
+
+    await auth.api.sendPhoneNumberOTP({
+      body: {
+        phoneNumber,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to send phone OTP:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to send phone OTP",
+    };
+  }
+}
+
+export async function verifyPhoneOTP(phoneNumber: string, otp: string) {
+  try {
+    const data = await auth.api.verifyPhoneNumber({
+      body: {
+        phoneNumber,
+        code: otp,
+        updatePhoneNumber: true,
+        disableSession: true,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    // toast.error("Invalid OTP code")
+    console.error(error);
+  }
+}
+
 export async function verifyOTP(email: string, otp: string) {
   const data = await auth.api.verifyEmailOTP({
     body: {
