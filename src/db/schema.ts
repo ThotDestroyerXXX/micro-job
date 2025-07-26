@@ -69,6 +69,15 @@ export const jobCategories = pgEnum("job_categories", [
   "Other",
 ]);
 
+export const applicationStatus = pgEnum("application_status", [
+  "applied",
+  "accepted",
+  "in progress",
+  "completed",
+  "cancelled",
+  "rejected",
+]);
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -199,6 +208,36 @@ export const job = pgTable("job", {
     () => /* @__PURE__ */ new Date()
   ),
   updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+});
+
+export const job_application = pgTable("job_application", {
+  id: text("id").primaryKey(),
+  jobId: text("job_id")
+    .notNull()
+    .references(() => job.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  status: applicationStatus("status").default("applied"),
+  applied_at: timestamp("applied_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+  accepted_at: timestamp("accepted_at"),
+  started_at: timestamp("started_at"),
+  completed_at: timestamp("completed_at"),
+  cancelled_at: timestamp("cancelled_at"),
+  employer_rating: integer("employer_rating"),
+  worker_rating: integer("worker_rating"),
+  employer_review: text("employer_review"),
+  worker_review: text("worker_review"),
+  payment_confirmed: boolean("payment_confirmed").default(false),
+  completion_files: jsonb("completion_files").$type<string[]>(),
+  created_at: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+  updated_at: timestamp("updated_at").$defaultFn(
     () => /* @__PURE__ */ new Date()
   ),
 });

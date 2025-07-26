@@ -57,12 +57,12 @@ function AvailabilityCard({
 
   return (
     <div className='grid grid-cols-7 gap-2 text-sm'>
-      {dayEnum.enumValues.map((dayName) => {
+      {dayEnum.enumValues.map((dayName, index) => {
         // Find the corresponding day data from tRPC fetch
         const dayData = availabilityMap.get(dayName);
 
         return (
-          <div key={dayName} className='text-center'>
+          <div key={`${dayName}-${index}`} className='text-center'>
             <div className='font-medium mb-1'>{dayName}</div>
             <Button
               className={`p-2 rounded w-full ${

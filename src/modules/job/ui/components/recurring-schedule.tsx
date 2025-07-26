@@ -52,6 +52,18 @@ export function RecurringSchedule({
     }
   };
 
+  const handleEnableDay = (day: (typeof dayEnum.enumValues)[number]) => {
+    append({
+      day,
+      start_time: "09:00",
+      end_time: "17:00",
+    });
+  };
+
+  const handleDisableDay = (scheduleIndex: number) => {
+    remove(scheduleIndex);
+  };
+
   return (
     <div className='space-y-4'>
       <Label className='text-base font-medium'>Weekly Schedule</Label>
@@ -68,15 +80,11 @@ export function RecurringSchedule({
                 <div className='flex items-center space-x-3'>
                   <Switch
                     checked={isEnabled}
-                    onCheckedChange={(checked) => {
-                      if (checked && scheduleIndex === -1) {
-                        append({
-                          day,
-                          start_time: "09:00",
-                          end_time: "17:00",
-                        });
-                      } else if (!checked && scheduleIndex !== -1) {
-                        remove(scheduleIndex);
+                    onCheckedChange={() => {
+                      if (isEnabled) {
+                        handleDisableDay(scheduleIndex);
+                      } else {
+                        handleEnableDay(day);
                       }
                     }}
                   />

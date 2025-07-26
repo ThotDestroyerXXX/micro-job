@@ -59,6 +59,7 @@ export function SkillCard({
               <Progress
                 value={Math.min((skill.years / 10) * 100, 100)}
                 className='w-full h-1.5'
+                indicatorColor='bg-primary'
               />
             </div>
           </div>

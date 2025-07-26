@@ -37,3 +37,12 @@ export function formatDateShort(date: Date | string): string {
     timeZone: "UTC",
   });
 }
+
+export function addressDisplay(location_type: string, address: string): string {
+  if (location_type === "remote") {
+    return "Remote";
+  } else if (location_type === "hybrid") {
+    return "Hybrid";
+  }
+  return address;
+}
