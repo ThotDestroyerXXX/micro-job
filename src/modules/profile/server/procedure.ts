@@ -13,12 +13,16 @@ export const profileRouter = createTRPCRouter({
   changeAccepting: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         isAcceptingJobs: z.boolean(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { userId, isAcceptingJobs } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { isAcceptingJobs } = input;
+      const userId = ctx.userId;
+
+      if (!userId) {
+        throw new Error("User is not authenticated.");
+      }
 
       await db
         .update(user)
@@ -30,13 +34,16 @@ export const profileRouter = createTRPCRouter({
   updateUserAvailability: baseProcedure
     .input(
       z.object({
-        userId: z.string(),
         dayOfWeek: z.enum(dayEnum.enumValues),
         isBusy: z.boolean(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { userId, dayOfWeek, isBusy } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { dayOfWeek, isBusy } = input;
+      const userId = ctx.userId;
+      if (!userId) {
+        throw new Error("User is not authenticated.");
+      }
       const existingAvailability = await db
         .select()
         .from(user_availability)
@@ -89,15 +96,19 @@ export const profileRouter = createTRPCRouter({
   updateUserProfile: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         name: z.string(),
         username: z.string(),
         bio: z.string().optional(),
         location: z.string().optional(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { userId, name, bio, location, username } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { name, bio, location, username } = input;
+
+      const userId = ctx.userId;
+      if (!userId) {
+        throw new Error("User is not authenticated.");
+      }
 
       await db
         .update(user)
@@ -109,12 +120,16 @@ export const profileRouter = createTRPCRouter({
   updateUserSkills: protectedProcedure
     .input(
       z.object({
-        userId: z.string(),
         skills: z.array(z.object({ name: z.string(), years: z.number() })),
       })
     )
-    .mutation(async ({ input }) => {
-      const { userId, skills } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { skills } = input;
+      const userId = ctx.userId;
+
+      if (!userId) {
+        throw new Error("User is not authenticated.");
+      }
 
       await db
         .update(user)

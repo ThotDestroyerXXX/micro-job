@@ -28,11 +28,7 @@ export default function BasicInfoSection({
       <Card>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit((values) =>
-                onSubmit(values, user.id)
-              )}
-            >
+            <form onSubmit={form.handleSubmit((values) => onSubmit(values))}>
               <div className='flex flex-col md:flex-row gap-6'>
                 <div className='flex flex-col items-center'>
                   {user.image ? (

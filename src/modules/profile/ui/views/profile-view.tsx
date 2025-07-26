@@ -23,7 +23,6 @@ export default function ProfileView({
           profileData={
             user.skills as unknown as { name: string; years: number }[]
           }
-          userId={user.id}
         />
         <LocationAvailabilitySection user={user} />
         <ContactInfoSection

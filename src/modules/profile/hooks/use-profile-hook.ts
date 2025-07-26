@@ -33,8 +33,8 @@ export function useChangeAcceptingJobs({
     },
   });
 
-  const changeAcceptingJobs = (userId: string, isAcceptingJobs: boolean) => {
-    mutate({ userId, isAcceptingJobs });
+  const changeAcceptingJobs = (isAcceptingJobs: boolean) => {
+    mutate({ isAcceptingJobs });
   };
 
   return { changeAcceptingJobs };
@@ -102,11 +102,10 @@ export function useUpdateUserProfile({
     },
   });
 
-  const onSubmit = async (values: BasicInformationFormData, userId: string) => {
+  const onSubmit = async (values: BasicInformationFormData) => {
     try {
       const { firstName, lastName, username, bio, location } = values;
       await mutateAsync({
-        userId,
         name: firstName + " " + lastName,
         username,
         bio,
@@ -168,22 +167,19 @@ export function useSkillsManagement({
     setNewSkill({ name: "", years: 1 });
   }, []);
 
-  const handleSave = useCallback(
-    async (userId: string) => {
-      setIsSaving(true);
-      try {
-        await mutateAsync({ userId, skills: editSkills });
-        setIsEditing(false);
-        setNewSkill({ name: "", years: 1 });
-      } catch (error) {
-        console.error("Failed to save skills:", error);
-        // You might want to show a toast notification here
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [editSkills, mutateAsync]
-  );
+  const handleSave = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      await mutateAsync({ skills: editSkills });
+      setIsEditing(false);
+      setNewSkill({ name: "", years: 1 });
+    } catch (error) {
+      console.error("Failed to save skills:", error);
+      // You might want to show a toast notification here
+    } finally {
+      setIsSaving(false);
+    }
+  }, [editSkills, mutateAsync]);
 
   const handleAddSkill = useCallback(() => {
     if (

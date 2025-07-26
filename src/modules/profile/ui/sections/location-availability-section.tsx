@@ -54,9 +54,7 @@ export default function LocationAvailabilitySection({
           </div>
           <Switch
             checked={user.isAcceptingJobs ?? false}
-            onCheckedChange={() =>
-              changeAcceptingJobs(user.id, !user.isAcceptingJobs)
-            }
+            onCheckedChange={() => changeAcceptingJobs(!user.isAcceptingJobs)}
             disabled={loading}
           />
         </div>

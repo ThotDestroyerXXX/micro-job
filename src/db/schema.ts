@@ -6,6 +6,9 @@ import {
   decimal,
   pgEnum,
   jsonb,
+  date,
+  integer,
+  time,
 } from "drizzle-orm/pg-core";
 
 export const dayEnum = pgEnum("day", [
@@ -16,6 +19,54 @@ export const dayEnum = pgEnum("day", [
   "Friday",
   "Saturday",
   "Sunday",
+]);
+
+export const jobType = pgEnum("job_type", [
+  "One-time",
+  "Recurring",
+  "Hourly",
+  "Fixed Price",
+  "Project-based",
+]);
+
+export const locationType = pgEnum("location_type", [
+  "remote",
+  "on-site",
+  "hybrid",
+]);
+
+export const experienceLevel = pgEnum("experience_level", [
+  "Entry Level",
+  "Intermediate",
+  "Expert",
+  "Any Level",
+]);
+
+export const paymentType = pgEnum("payment_type", [
+  "Hourly",
+  "Fixed Price",
+  "Commission-based",
+]);
+
+export const preferredPaymentMethod = pgEnum("preferred_payment_method", [
+  "Cash",
+  "Bank Transfer",
+  "PayPal",
+  "Digital Wallet",
+  "Platform Wallet",
+]);
+
+export const jobCategories = pgEnum("job_categories", [
+  "Delivery & Transportation",
+  "Cleaning & Maintenance",
+  "Tutoring & Education",
+  "Pet Care",
+  "Moving & Packing",
+  "Data Entry & Admin",
+  "Handyman & Repairs",
+  "Cooking & Catering",
+  "Photography & Design",
+  "Other",
 ]);
 
 export const user = pgTable("user", {
@@ -101,6 +152,49 @@ export const user_availability = pgTable("user_availability", {
     .references(() => user.id, { onDelete: "cascade" }),
   day_of_week: dayEnum("day_of_week").notNull(),
   isBusy: boolean("is_busy").$defaultFn(() => true),
+  createdAt: timestamp("created_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+  updatedAt: timestamp("updated_at").$defaultFn(
+    () => /* @__PURE__ */ new Date()
+  ),
+});
+
+export const job = pgTable("job", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title"),
+  category: jobCategories("category"),
+  job_type: jobType("job_type"),
+  short_description: text("short_description"),
+  description: text("description"),
+  location_type: locationType("location_type"),
+  address: text("address"),
+  latitude: decimal("latitude", { precision: 10, scale: 6 }),
+  longitude: decimal("longitude", { precision: 10, scale: 6 }),
+  start_date: date("start_date"),
+  end_date: date("end_date"),
+  schedule: jsonb("schedule").$type<
+    {
+      day: (typeof dayEnum.enumValues)[number];
+      startTime: typeof time & { precision: 4 };
+      endTime: typeof time & { precision: 4 };
+    }[]
+  >(),
+  required_skills: jsonb("required_skills").$type<string[]>(),
+  experience_level: experienceLevel("experience_level"),
+  requirements: text("requirements"),
+  pay_amount: decimal("pay_amount", { precision: 10, scale: 2 }),
+  pay_type: paymentType("pay_type"),
+  preferred_payment_method: preferredPaymentMethod("preferred_payment_method"),
+  workers_needed: integer("workers_needed").default(1),
+  is_visible: boolean("is_visible").default(true),
+  expires_at: date("expires_at"),
+  is_active: boolean("is_active").default(true),
+  image: text("image"),
+
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date()
   ),

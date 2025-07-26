@@ -14,12 +14,10 @@ interface Skill {
 
 interface SkillSectionProps {
   profileData: Skill[];
-  userId: string;
 }
 
 export default function SkillSection({
   profileData,
-  userId,
 }: Readonly<SkillSectionProps>) {
   const {
     isEditing,
@@ -46,7 +44,7 @@ export default function SkillSection({
           isEditing={isEditing}
           isSaving={isSaving}
           onEdit={handleEdit}
-          onSave={() => handleSave(userId)}
+          onSave={() => handleSave()}
           onCancel={handleCancel}
         />
       </CardHeader>
