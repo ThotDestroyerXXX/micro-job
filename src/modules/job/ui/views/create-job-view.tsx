@@ -1,14 +1,14 @@
 "use client";
 import { Form } from "@/components/ui/form";
-import CreateJobHeader from "../sections/create-job-header";
+import CreateJobHeader from "../sections/create/create-job-header";
 import { useJobForm } from "../../hooks/use-job-hook";
-import BasicJobInformationSection from "../sections/basic-job-information-section";
-import SkillRequirementSection from "../sections/skill-requirement-section";
-import LocationTimeSection from "../sections/location-time-section";
-import PaymentBudgetSection from "../sections/payment-budget-section";
-import JobVisibilitySection from "../sections/job-visibility-section";
-import JobAttachmentSection from "../sections/job-attachment-section";
-import CreateJobFooter from "../sections/create-job-footer";
+import BasicJobInformationSection from "../sections/create/basic-job-information-section";
+import SkillRequirementSection from "../sections/create/skill-requirement-section";
+import LocationTimeSection from "../sections/create/location-time-section";
+import PaymentBudgetSection from "../sections/create/payment-budget-section";
+import JobVisibilitySection from "../sections/create/job-visibility-section";
+import JobAttachmentSection from "../sections/create/job-attachment-section";
+import CreateJobFooter from "../sections/create/create-job-footer";
 
 export default function CreateJobView() {
   const { form, onSubmit, isLoading } = useJobForm();

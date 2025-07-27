@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { DollarSign } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
+import { JobFormData } from "../../../config/job.config";
 import { paymentType, preferredPaymentMethod } from "@/db/schema";
 
 export default function PaymentBudgetSection({

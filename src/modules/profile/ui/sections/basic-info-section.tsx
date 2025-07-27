@@ -1,5 +1,4 @@
 "use client";
-import GuestAvatar from "@/components/guest-avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { useUpdateUserProfile } from "../../hooks/use-profile-hook";
 import { BASIC_INFORMATION_FORM_FIELDS } from "../../config/profile.config";
 import { FormFieldWrapper } from "@/modules/auth/ui/components/form-field-wrapper";
 import { formatDate } from "@/lib/utils";
+import UserAvatar from "@/components/user-avatar";
 
 export default function BasicInfoSection({
   user,
@@ -37,7 +37,11 @@ export default function BasicInfoSection({
                       <AvatarFallback>SJ</AvatarFallback>
                     </Avatar>
                   ) : (
-                    <GuestAvatar className='h-32 w-32 mb-4' />
+                    <UserAvatar
+                      className='h-32 w-32 mb-4'
+                      image={user.image ?? null}
+                      alt={user.name}
+                    />
                   )}
                   {isEditingProfile ? (
                     <Button

@@ -77,3 +77,59 @@ export function useJobForm() {
     isLoading: form.formState.isSubmitting,
   };
 }
+
+export function useToggleSaveJob() {
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.job.toogleSaveJob.useMutation({
+    onMutate: async ({ jobId }) => {
+      // Cancel any outgoing refetches
+      await utils.job.getAll.cancel();
+
+      // Snapshot the previous value
+      const previousJobs = utils.job.getAll.getData();
+
+      // Optimistically update the cache
+      utils.job.getAll.setData(undefined, (old) => {
+        if (!old) return old;
+
+        return old.map((item) => {
+          if (item.job.id === jobId) {
+            return {
+              ...item,
+              isSaved: !item.isSaved, // Toggle the saved state
+            };
+          }
+          return item;
+        });
+      });
+
+      return { previousJobs };
+    },
+    onSuccess: async (data) => {
+      toast.success(data.message);
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousJobs) {
+        utils.job.getAll.setData(undefined, context.previousJobs);
+      }
+      console.error("Failed to save job:", error);
+      toast.error("Failed to save job");
+    },
+    onSettled: () => {
+      // Always refetch to ensure server state is in sync
+      utils.job.getAll.invalidate();
+    },
+  });
+
+  const toggleSaveJob = async (jobId: string) => {
+    try {
+      await mutateAsync({ jobId });
+    } catch (error) {
+      console.error("Error saving job:", error);
+    }
+  };
+
+  return { toggleSaveJob };
+}

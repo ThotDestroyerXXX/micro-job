@@ -6,7 +6,7 @@ export default function DashboardHeader({
   name,
 }: Readonly<{ name: Session["user"]["name"] }>) {
   return (
-    <header className='flex items-center justify-between'>
+    <header className='flex items-center justify-between gap-4'>
       <div>
         <h1 className='text-3xl font-bold text-gray-900'>
           Good morning, {name.split(" ")[0]} 👋

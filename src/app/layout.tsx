@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang='en'>
       <ReactScan />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${baumans.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${baumans.className} antialiased bg-gray-50`}
       >
         <TRPCProvider>
           <div className='w-full max-w-7xl mx-auto'>{children}</div>

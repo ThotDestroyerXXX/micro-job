@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { differenceInDays, differenceInHours } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -45,4 +46,63 @@ export function addressDisplay(location_type: string, address: string): string {
     return "Hybrid";
   }
   return address;
+}
+
+export function getRelativeTime(
+  createdAt: string | Date,
+  endDate?: string | Date
+): string {
+  const now = Date.now();
+  const created = new Date(createdAt);
+  const end = endDate ? new Date(endDate) : now;
+
+  const hoursDiff = differenceInHours(end, created);
+
+  if (hoursDiff < 24) {
+    return `${hoursDiff}h ago`;
+  } else {
+    const daysDiff = differenceInDays(end, created);
+    return `${daysDiff}d ago`;
+  }
+}
+
+// For job duration (start_date to end_date) - SSR safe
+export function getJobDuration(
+  startDate: string | Date,
+  endDate: string | Date
+): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const daysDiff = differenceInDays(end, start);
+
+  if (daysDiff === 0) {
+    return "Same day";
+  } else if (daysDiff === 1) {
+    return "1 day";
+  } else {
+    return `${daysDiff} days`;
+  }
+}
+
+// For "time ago" display - Client-side only to prevent hydration issues
+export function getTimeAgo(createdAt: string | Date): string {
+  if (typeof window === "undefined") {
+    // Return a static fallback for SSR
+    return "Recently";
+  }
+
+  const now = new Date();
+  const created = new Date(createdAt);
+
+  const hoursDiff = differenceInHours(now, created);
+
+  if (hoursDiff < 1) {
+    return "Just now";
+  } else if (hoursDiff < 24) {
+    return `${hoursDiff}h ago`;
+  } else {
+    const daysDiff = differenceInDays(now, created);
+    return `${daysDiff}d ago`;
+  }
 }

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import SignOutButton from "../sign-out-button";
 import Link from "next/link";
-import GuestAvatar from "../guest-avatar";
+import UserAvatar from "../user-avatar";
 
 export default function ProfileDropdown({
   image,
@@ -30,21 +30,23 @@ export default function ProfileDropdown({
             className='w-8 h-8 rounded-full border-3 border-black'
           />
         ) : (
-          <GuestAvatar />
+          <UserAvatar image={image ?? null} alt='Profile' />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='end'>
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
+            <Link href='/dashboard'>
+              Dashboard
+              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <Link href='/profile'>
               Profile
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Billing
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Settings

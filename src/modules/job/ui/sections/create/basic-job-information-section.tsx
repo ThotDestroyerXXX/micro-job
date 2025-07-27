@@ -6,7 +6,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
+import { JobFormData } from "../../../config/job.config";
 import {
   FormControl,
   FormDescription,

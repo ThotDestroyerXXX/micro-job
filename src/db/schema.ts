@@ -9,6 +9,8 @@ import {
   date,
   integer,
   time,
+  unique,
+  index,
 } from "drizzle-orm/pg-core";
 
 export const dayEnum = pgEnum("day", [
@@ -241,3 +243,27 @@ export const job_application = pgTable("job_application", {
     () => /* @__PURE__ */ new Date()
   ),
 });
+
+export const job_favorite = pgTable(
+  "job_favorite",
+  {
+    id: text("id").primaryKey(),
+
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+
+    jobId: text("job_id")
+      .notNull()
+      .references(() => job.id, { onDelete: "cascade" }),
+
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    unique().on(table.userId, table.jobId),
+    index("job_favorite_user_id_idx").on(table.userId),
+    index("job_favorite_job_id_idx").on(table.jobId),
+  ]
+);

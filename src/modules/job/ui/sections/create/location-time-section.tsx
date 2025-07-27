@@ -6,11 +6,11 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
-import { LocationFields } from "../components/location-fields";
-import { DateFields } from "../components/date-fields";
-import { NonRecurringSchedule } from "../components/non-recurring-schedule";
-import { RecurringSchedule } from "../components/recurring-schedule";
+import { JobFormData } from "../../../config/job.config";
+import { LocationFields } from "../../components/location-fields";
+import { DateFields } from "../../components/date-fields";
+import { NonRecurringSchedule } from "../../components/non-recurring-schedule";
+import { RecurringSchedule } from "../../components/recurring-schedule";
 
 export default function LocationTimeSection({
   form,

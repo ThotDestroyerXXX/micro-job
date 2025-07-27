@@ -8,7 +8,7 @@ import {
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
+import { JobFormData } from "../../../config/job.config";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 

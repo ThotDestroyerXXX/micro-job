@@ -24,7 +24,7 @@ import { Calendar } from "lucide-react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
+import { JobFormData } from "../../../config/job.config";
 import { formatDateShort } from "@/lib/utils";
 
 export default function JobVisibilitySection({

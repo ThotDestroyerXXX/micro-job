@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 
 export default function CreateJobFooter({
   isSubmitting,
-}: {
+}: Readonly<{
   isSubmitting: boolean;
-}) {
+}>) {
   return (
     <div className='flex justify-end gap-4 pb-8'>
       <Button type='button' variant='outline' size='lg'>

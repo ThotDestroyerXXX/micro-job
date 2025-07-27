@@ -20,7 +20,7 @@ import { Label } from "@/components/ui/label";
 import SelectForm from "@/components/select-form";
 import { experienceLevel } from "@/db/schema";
 import { UseFormReturn } from "react-hook-form";
-import { JobFormData } from "../../config/job.config";
+import { JobFormData } from "../../../config/job.config";
 
 export default function SkillRequirementSection({
   form,

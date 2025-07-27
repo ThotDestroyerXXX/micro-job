@@ -15,6 +15,7 @@ import {
   getMissingProfileFields,
   progressColor,
 } from "@/lib/profile-completion";
+import Link from "next/link";
 
 export default function ProfileSummaryCard({
   user,
@@ -26,10 +27,10 @@ export default function ProfileSummaryCard({
 
   return (
     <section>
-      <Card className='bg-gradient-to-r from-blue-600 to-purple-700 text-white border-0'>
+      <Card className='bg-gradient-to-r from-blue-600 to-purple-700 text-white border-0 '>
         <CardContent>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-4'>
+          <div className='flex items-center justify-between sm:flex-row flex-col gap-4 sm:gap-0'>
+            <div className='flex items-center sm:space-x-4 sm:flex-row text-center sm:text-start flex-col'>
               <Avatar className='h-16 w-16 border-2 border-white/20'>
                 <AvatarImage
                   src={user.image ?? "/images/auth-image.jpg"}
@@ -41,7 +42,7 @@ export default function ProfileSummaryCard({
               </Avatar>
               <div>
                 <h2 className='text-xl font-bold'>{user.name}</h2>
-                <div className='flex items-center gap-4 mt-1'>
+                <div className='flex items-center gap-1 mt-1 flex-col min-[370px]:flex-row min-[370px]:gap-4'>
                   <div className='flex items-center gap-1'>
                     <Star className='h-4 w-4 fill-yellow-400 text-yellow-400' />
                     <span className='font-medium text-white'>
@@ -86,13 +87,15 @@ export default function ProfileSummaryCard({
                 />
               </div>
               {profileCompletion < 100 && (
-                <Button
-                  variant='secondary'
-                  size='sm'
-                  className='mt-3 bg-white/20 text-white hover:bg-white/30 border-0'
-                >
-                  Complete Profile
-                </Button>
+                <Link href={"/profile"}>
+                  <Button
+                    variant='secondary'
+                    size='sm'
+                    className='mt-3 bg-white/20 text-white hover:bg-white/30 border-0'
+                  >
+                    Complete Profile
+                  </Button>
+                </Link>
               )}
             </div>
           </div>
