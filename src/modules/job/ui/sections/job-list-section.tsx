@@ -8,9 +8,10 @@ import { Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import JobCard from "../components/job-card";
 import JobFilter from "../components/job-filter";
+import Link from "next/link";
 
 export default function JobList() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("latest");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedJobType, setSelectedJobType] = useState("All Types");
@@ -131,13 +132,14 @@ export default function JobList() {
               className={`space-y-6 ${viewMode === "grid" ? "grid grid-cols-1 xl:grid-cols-2 gap-8" : "flex flex-col w-full"}`}
             >
               {filteredJobs.map((job) => (
-                <JobCard
-                  key={job.job.id}
-                  job={job.job}
-                  userJob={job.user}
-                  viewMode={viewMode}
-                  isSaved={job.isSaved}
-                />
+                <Link key={job.job.id} href={`/job/${job.job.id}`}>
+                  <JobCard
+                    job={job.job}
+                    userJob={job.user}
+                    viewMode={viewMode}
+                    isSaved={job.isSaved}
+                  />
+                </Link>
               ))}
             </div>
           )}

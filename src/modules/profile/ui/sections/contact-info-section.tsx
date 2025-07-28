@@ -33,11 +33,13 @@ export default function ContactInfoSection({
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-3'>
-        <div className='flex items-center gap-3'>
-          <Mail className='h-4 w-4 text-muted-foreground' />
-          <span>{email}</span>
+        <div className='flex items-start min-[420px]:items-center min-[420px]:gap-3 flex-col min-[420px]:flex-row'>
+          <div className='flex-row flex items-center gap-2'>
+            <Mail className='h-4 w-4 text-muted-foreground shrink-0' />
+            <span className='shrink-0'>{email}</span>
+          </div>
           {emailVerified ? (
-            <CheckCircle className='h-4 w-4 text-green-500' />
+            <CheckCircle className='h-4 w-4 text-green-500 shrink-0' />
           ) : (
             <div className='flex items-center gap-2 justify-between w-full'>
               <div className='flex gap-2'>
@@ -56,24 +58,24 @@ export default function ContactInfoSection({
             </div>
           )}
         </div>
-        <div className='flex items-center justify-between gap-3'>
-          <div className='flex items-center gap-3'>
-            <Phone className='h-4 w-4 text-muted-foreground' />
-            <span>{phone}</span>
-            {phoneVerified ? (
-              <CheckCircle className='h-4 w-4 text-green-500' />
-            ) : (
-              <div className='flex items-center gap-2 '>
+        <div className='flex items-start min-[420px]:items-center min-[420px]:gap-3 flex-col min-[420px]:flex-row'>
+          <div className='flex-row flex items-center gap-2'>
+            <Phone className='h-4 w-4 text-muted-foreground shrink-0' />
+            <span className='shrink-0'>{phone}</span>
+          </div>
+          {phoneVerified ? (
+            <CheckCircle className='h-4 w-4 text-green-500 shrink-0' />
+          ) : (
+            <div className='flex items-center gap-2 justify-between flex-1 max-[420px]:w-full'>
+              <div className='flex gap-2'>
                 <div className='h-4 w-4 rounded-full border-2 border-orange-500 flex items-center justify-center'>
                   <div className='h-1.5 w-1.5 bg-orange-500 rounded-full' />
                 </div>
                 <span className='text-xs text-orange-600'>Unverified</span>
               </div>
-            )}
-          </div>
-          {!phoneVerified && (
-            <div className='flex items-center'>
-              <PhoneVerificationDialog />
+              <div className='flex items-center'>
+                <PhoneVerificationDialog />
+              </div>
             </div>
           )}
         </div>

@@ -83,13 +83,15 @@ export function useToggleSaveJob() {
 
   const { mutateAsync } = trpc.job.toogleSaveJob.useMutation({
     onMutate: async ({ jobId }) => {
-      // Cancel any outgoing refetches
+      // Cancel any outgoing refetches for both queries
       await utils.job.getAll.cancel();
+      await utils.job.getOne.cancel();
 
-      // Snapshot the previous value
+      // Snapshot the previous values
       const previousJobs = utils.job.getAll.getData();
+      const previousJob = utils.job.getOne.getData({ jobId });
 
-      // Optimistically update the cache
+      // Optimistically update the getAll cache
       utils.job.getAll.setData(undefined, (old) => {
         if (!old) return old;
 
@@ -104,7 +106,17 @@ export function useToggleSaveJob() {
         });
       });
 
-      return { previousJobs };
+      // Optimistically update the getOne cache
+      utils.job.getOne.setData({ jobId }, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          isSaved: !old.isSaved, // Toggle the saved state
+        };
+      });
+
+      return { previousJobs, previousJob };
     },
     onSuccess: async (data) => {
       toast.success(data.message);
@@ -114,12 +126,18 @@ export function useToggleSaveJob() {
       if (context?.previousJobs) {
         utils.job.getAll.setData(undefined, context.previousJobs);
       }
+      if (context?.previousJob) {
+        utils.job.getOne.setData(
+          { jobId: variables.jobId },
+          context.previousJob
+        );
+      }
       console.error("Failed to save job:", error);
       toast.error("Failed to save job");
     },
     onSettled: () => {
       // Always refetch to ensure server state is in sync
-      utils.job.getAll.invalidate();
+      utils.job.invalidate();
     },
   });
 
@@ -132,4 +150,80 @@ export function useToggleSaveJob() {
   };
 
   return { toggleSaveJob };
+}
+
+// Alternative hook for when you know the specific jobId (useful for job detail pages)
+export function useToggleSaveJobForDetail(jobId: string) {
+  const utils = trpc.useUtils();
+
+  const { mutateAsync, isPending } = trpc.job.toogleSaveJob.useMutation({
+    onMutate: async () => {
+      // Cancel any outgoing refetches for both queries
+      await utils.job.getAll.cancel();
+      await utils.job.getOne.cancel();
+
+      // Snapshot the previous values
+      const previousJobs = utils.job.getAll.getData();
+      const previousJob = utils.job.getOne.getData({ jobId });
+
+      // Optimistically update the getAll cache
+      utils.job.getAll.setData(undefined, (old) => {
+        if (!old) return old;
+
+        return old.map((item) => {
+          if (item.job.id === jobId) {
+            return {
+              ...item,
+              isSaved: !item.isSaved,
+            };
+          }
+          return item;
+        });
+      });
+
+      // Optimistically update the getOne cache
+      utils.job.getOne.setData({ jobId }, (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          isSaved: !old.isSaved,
+        };
+      });
+
+      return { previousJobs, previousJob };
+    },
+    onSuccess: async (data) => {
+      toast.success(data.message);
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousJobs) {
+        utils.job.getAll.setData(undefined, context.previousJobs);
+      }
+      if (context?.previousJob) {
+        utils.job.getOne.setData({ jobId }, context.previousJob);
+      }
+      console.error("Failed to save job:", error);
+      toast.error("Failed to save job");
+    },
+    onSettled: () => {
+      // Always refetch to ensure server state is in sync
+      utils.job.invalidate();
+    },
+  });
+
+  const toggle = async () => {
+    if (!jobId) {
+      console.error("JobId is required");
+      return;
+    }
+    try {
+      await mutateAsync({ jobId });
+    } catch (error) {
+      console.error("Error saving job:", error);
+    }
+  };
+
+  return { toggle, isPending };
 }

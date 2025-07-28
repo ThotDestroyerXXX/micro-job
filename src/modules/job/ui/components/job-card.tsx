@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   DollarSign,
   Clock,
-  Heart,
   MapPin,
   Shield,
   Star,
@@ -15,9 +14,9 @@ import { InferSelectModel } from "drizzle-orm";
 import { job as jobTable, user } from "@/db/schema"; // Adjust the import path as needed
 
 import { getCategoryGradient } from "@/lib/job-category-gradients";
-import { addressDisplay, getRelativeTime } from "@/lib/utils";
+import { addressDisplay, getRelativeTime, getTimeAgo } from "@/lib/utils";
 import UserAvatar from "@/components/user-avatar";
-import { useToggleSaveJob } from "../../hooks/use-job-hook";
+import HeartSave from "@/components/heart-save";
 
 const JobCard = ({
   job,
@@ -30,11 +29,9 @@ const JobCard = ({
   viewMode: "list" | "grid";
   isSaved: boolean;
 }) => {
-  const { toggleSaveJob } = useToggleSaveJob();
-
   return (
     <Card
-      className={`group hover:shadow-xl transition-all duration-500 cursor-pointer border-0 overflow-hidden ${
+      className={`group hover:shadow-xl h-full transition-all duration-500 cursor-pointer border-0 overflow-hidden ${
         viewMode === "list" ? "flex-row gap-1" : "flex-col"
       } p-0`}
     >
@@ -91,23 +88,7 @@ const JobCard = ({
                 </div>
               </div>
 
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSaveJob(job.id);
-                }}
-                className='p-2 hover:bg-red-50 shrink-0 transition-colors'
-              >
-                <Heart
-                  className={`h-5 w-5 transition-colors ${
-                    isSaved
-                      ? "text-red-500 fill-red-500 hover:text-red-600 hover:fill-red-600"
-                      : "text-gray-400 hover:text-red-500"
-                  }`}
-                />
-              </Button>
+              <HeartSave jobId={job.id} isSaved={isSaved} isDetail={true} />
             </div>
 
             {/* Location & Time */}
@@ -121,7 +102,7 @@ const JobCard = ({
               <div className='flex items-center gap-1 text-gray-500 shrink-0'>
                 <Clock className='h-4 w-4 shrink-0' />
                 <span className='whitespace-nowrap'>
-                  {getRelativeTime(job.createdAt ?? "")}
+                  {getTimeAgo(job.createdAt ?? "")}
                 </span>
               </div>
             </div>
@@ -157,14 +138,14 @@ const JobCard = ({
 
           {/* Skills & Action - Side panel for list view */}
           <div
-            className={`flex gap-4 ${
+            className={`flex gap-4 max-[400px]:flex-col ${
               viewMode === "list"
                 ? "flex-col items-end justify-between min-w-[200px] shrink-0"
                 : "items-center justify-between mt-auto"
             }`}
           >
             <div
-              className={`flex gap-2 overflow-hidden ${
+              className={`flex gap-2 overflow-hidden w-full ${
                 viewMode === "list" ? "flex-wrap justify-end" : "flex-nowrap"
               }`}
             >

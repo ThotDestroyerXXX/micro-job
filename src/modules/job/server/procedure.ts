@@ -1,11 +1,12 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import db from "@/db";
 import { z } from "zod";
-import { job, job_favorite, user } from "@/db/schema";
+import { job, job_favorite, job_application, user } from "@/db/schema";
 import { v4 as uuidv4 } from "uuid";
 import { jobSchema } from "../config/job.config";
 import { time } from "drizzle-orm/pg-core";
-import { and, eq } from "drizzle-orm";
+import { and, eq, count } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export const jobRouter = createTRPCRouter({
   createJob: protectedProcedure
@@ -93,6 +94,7 @@ export const jobRouter = createTRPCRouter({
         job: job,
         user: user,
         isSaved: job_favorite.id,
+        applicationCount: count(job_application.id),
       })
       .from(job)
       .innerJoin(user, eq(job.userId, user.id))
@@ -100,11 +102,53 @@ export const jobRouter = createTRPCRouter({
         job_favorite,
         and(eq(job_favorite.jobId, job.id), eq(job_favorite.userId, ctx.userId))
       )
+      .leftJoin(job_application, eq(job_application.jobId, job.id))
+      .groupBy(job.id, user.id, job_favorite.id)
       .execute();
+
+    // Get user statistics for all unique users
+    const userIds = [...new Set(jobs.map((job) => job.user.id))];
+
+    const userStats = await Promise.all(
+      userIds.map(async (userId) => {
+        const [postedJobs, completedJobs] = await Promise.all([
+          db
+            .select({ count: count() })
+            .from(job)
+            .where(eq(job.userId, userId))
+            .execute(),
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.userId, userId),
+                eq(job_application.status, "completed")
+              )
+            )
+            .execute(),
+        ]);
+
+        return {
+          userId,
+          totalPostedJobs: postedJobs[0]?.count || 0,
+          totalCompletedJobs: completedJobs[0]?.count || 0,
+        };
+      })
+    );
+
+    const userStatsMap = new Map(userStats.map((stat) => [stat.userId, stat]));
 
     return jobs.map((item) => ({
       ...item,
       isSaved: !!item.isSaved, // Convert to boolean
+      applicationCount: item.applicationCount || 0,
+      user: {
+        ...item.user,
+        totalPostedJobs: userStatsMap.get(item.user.id)?.totalPostedJobs || 0,
+        totalCompletedJobs:
+          userStatsMap.get(item.user.id)?.totalCompletedJobs || 0,
+      },
     }));
   }),
 
@@ -151,5 +195,76 @@ export const jobRouter = createTRPCRouter({
         })
         .execute();
       return { jobId, message: "Job saved successfully" };
+    }),
+
+  getOne: protectedProcedure
+    .input(z.object({ jobId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      if (!ctx.userId) {
+        redirect("/login"); // Redirect to login if user is not authenticated
+      }
+      const { jobId } = input;
+
+      // Get job details with user and saved status
+      const jobDetails = await db
+        .select({
+          job: job,
+          user: user,
+          isSaved: job_favorite.id,
+        })
+        .from(job)
+        .innerJoin(user, eq(job.userId, user.id))
+        .leftJoin(
+          job_favorite,
+          and(
+            eq(job_favorite.jobId, job.id),
+            eq(job_favorite.userId, ctx.userId)
+          )
+        )
+        .where(eq(job.id, jobId))
+        .execute();
+
+      if (jobDetails.length === 0) {
+        throw new Error("Job not found");
+      }
+
+      const jobOwnerUserId = jobDetails[0].user.id;
+
+      // Get application count for this job
+      const applicationCount = await db
+        .select({ count: count() })
+        .from(job_application)
+        .where(eq(job_application.jobId, jobId))
+        .execute();
+
+      // Get total jobs posted by the job owner
+      const postedJobsCount = await db
+        .select({ count: count() })
+        .from(job)
+        .where(eq(job.userId, jobOwnerUserId))
+        .execute();
+
+      // Get total jobs completed by the job owner (as a worker)
+      const completedJobsCount = await db
+        .select({ count: count() })
+        .from(job_application)
+        .where(
+          and(
+            eq(job_application.userId, jobOwnerUserId),
+            eq(job_application.status, "completed")
+          )
+        )
+        .execute();
+
+      return {
+        ...jobDetails[0],
+        isSaved: !!jobDetails[0].isSaved, // Convert to boolean
+        applicationCount: applicationCount[0]?.count || 0,
+        user: {
+          ...jobDetails[0].user,
+          totalPostedJobs: postedJobsCount[0]?.count || 0,
+          totalCompletedJobs: completedJobsCount[0]?.count || 0,
+        },
+      };
     }),
 });

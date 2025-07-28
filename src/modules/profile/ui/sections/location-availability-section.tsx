@@ -22,7 +22,7 @@ export default function LocationAvailabilitySection({
     <Card>
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
-          <MapPin className='h-5 w-5' />
+          <MapPin className='h-5 w-5 shrink-0' />
           Location & Availability
         </CardTitle>
       </CardHeader>
@@ -45,7 +45,7 @@ export default function LocationAvailabilitySection({
           />
         </div>
 
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between gap-3'>
           <div>
             <h4 className='font-medium'>Accepting New Jobs</h4>
             <p className='text-sm text-muted-foreground'>

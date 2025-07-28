@@ -55,15 +55,8 @@ export function getRelativeTime(
   const now = Date.now();
   const created = new Date(createdAt);
   const end = endDate ? new Date(endDate) : now;
-
-  const hoursDiff = differenceInHours(end, created);
-
-  if (hoursDiff < 24) {
-    return `${hoursDiff}h ago`;
-  } else {
-    const daysDiff = differenceInDays(end, created);
-    return `${daysDiff}d ago`;
-  }
+  const daysDiff = differenceInDays(end, created) + 1;
+  return daysDiff.toString();
 }
 
 // For job duration (start_date to end_date) - SSR safe
@@ -87,11 +80,6 @@ export function getJobDuration(
 
 // For "time ago" display - Client-side only to prevent hydration issues
 export function getTimeAgo(createdAt: string | Date): string {
-  if (typeof window === "undefined") {
-    // Return a static fallback for SSR
-    return "Recently";
-  }
-
   const now = new Date();
   const created = new Date(createdAt);
 
