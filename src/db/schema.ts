@@ -226,6 +226,7 @@ export const job_application = pgTable("job_application", {
   applied_at: timestamp("applied_at").$defaultFn(
     () => /* @__PURE__ */ new Date()
   ),
+  application_reason: text("application_reason"),
   accepted_at: timestamp("accepted_at"),
   started_at: timestamp("started_at"),
   completed_at: timestamp("completed_at"),

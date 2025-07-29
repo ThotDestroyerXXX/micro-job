@@ -22,11 +22,13 @@ export default function JobOverview({
           Detailed Description
         </h3>
         <div className='prose prose-gray max-w-none'>
-          <div className={`text-gray-700 leading-relaxed `}>
+          <div
+            className={`text-gray-700 leading-relaxed ${!showFullDescription ? "line-clamp-3" : ""}`}
+          >
             {detailedDescription?.split("\n").map((paragraph, index) => (
               <p
                 key={`${paragraph}-${index}`}
-                className={`mb-4 whitespace-pre-line break-all ${!showFullDescription ? "line-clamp-3" : ""}`}
+                className='mb-4 whitespace-pre-line break-all'
               >
                 {paragraph}
               </p>

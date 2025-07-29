@@ -24,10 +24,10 @@ export const QUICK_ACTION_CONSTANTS = [
   },
   {
     icon: Calendar,
-    title: "Manage Schedule",
-    description: "Set your availability",
+    title: "Manage Job Applications",
+    description: "Track applications from your jobs",
     color: "from-orange-500 to-orange-600",
-    link: "/schedule",
+    link: "/job/manage-applications",
   },
   {
     icon: Eye,

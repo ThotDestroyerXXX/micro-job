@@ -5,7 +5,7 @@ import { job, job_favorite, job_application, user } from "@/db/schema";
 import { v4 as uuidv4 } from "uuid";
 import { jobSchema } from "../config/job.config";
 import { time } from "drizzle-orm/pg-core";
-import { and, eq, count } from "drizzle-orm";
+import { and, eq, count, gt, desc, lt } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export const jobRouter = createTRPCRouter({
@@ -103,6 +103,7 @@ export const jobRouter = createTRPCRouter({
         and(eq(job_favorite.jobId, job.id), eq(job_favorite.userId, ctx.userId))
       )
       .leftJoin(job_application, eq(job_application.jobId, job.id))
+      .where(gt(job.expires_at, new Date().toISOString().split("T")[0]))
       .groupBy(job.id, user.id, job_favorite.id)
       .execute();
 
@@ -267,4 +268,120 @@ export const jobRouter = createTRPCRouter({
         },
       };
     }),
+
+  getOwnJobs: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.userId) {
+      throw new Error("User is not authenticated.");
+    }
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    // Get jobs with application counts
+    const jobs = await db
+      .select({
+        job: job,
+        applicationCount: count(job_application.id),
+      })
+      .from(job)
+      .leftJoin(job_application, eq(job_application.jobId, job.id))
+      .groupBy(job.id)
+      .orderBy(desc(job.createdAt))
+      .execute();
+
+    // For each job, get accepted and pending counts
+    const jobsWithCounts = await Promise.all(
+      jobs.map(async (jobItem) => {
+        const [acceptedCount, pendingCount] = await Promise.all([
+          // Count accepted applications
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.jobId, jobItem.job.id),
+                eq(job_application.status, "accepted")
+              )
+            )
+            .execute(),
+
+          // Count pending applications (status = "applied")
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.jobId, jobItem.job.id),
+                eq(job_application.status, "applied")
+              )
+            )
+            .execute(),
+        ]);
+
+        return {
+          ...jobItem.job,
+          applicationCount: jobItem.applicationCount || 0,
+          acceptedCount: acceptedCount[0]?.count || 0,
+          pendingCount: pendingCount[0]?.count || 0,
+        };
+      })
+    );
+
+    // Get summary statistics in parallel
+    const [
+      totalJobsCount,
+      activeJobsCount,
+      expiredJobsCount,
+      totalApplicantsCount,
+      pendingReviewCount,
+    ] = await Promise.all([
+      // Total jobs posted
+      db
+        .select({ count: count() })
+        .from(job)
+        .where(eq(job.userId, ctx.userId))
+        .execute(),
+
+      // Active jobs count
+      db
+        .select({ count: count() })
+        .from(job)
+        .where(and(eq(job.userId, ctx.userId), gt(job.expires_at, currentDate)))
+        .execute(),
+
+      // Expired jobs count
+      db
+        .select({ count: count() })
+        .from(job)
+        .where(and(eq(job.userId, ctx.userId), lt(job.expires_at, currentDate)))
+        .execute(),
+
+      // Total applicants across all jobs
+      db
+        .select({ count: count() })
+        .from(job_application)
+        .innerJoin(job, eq(job.id, job_application.jobId))
+        .where(eq(job.userId, ctx.userId))
+        .execute(),
+
+      // Pending applications (status = "applied")
+      db
+        .select({ count: count() })
+        .from(job_application)
+        .innerJoin(job, eq(job.id, job_application.jobId))
+        .where(
+          and(eq(job.userId, ctx.userId), eq(job_application.status, "applied"))
+        )
+        .execute(),
+    ]);
+
+    return {
+      jobs: jobsWithCounts,
+      summary: {
+        totalJobs: totalJobsCount[0]?.count || 0,
+        activeJobs: activeJobsCount[0]?.count || 0,
+        expiredJobs: expiredJobsCount[0]?.count || 0,
+        totalApplicants: totalApplicantsCount[0]?.count || 0,
+        pendingReview: pendingReviewCount[0]?.count || 0,
+      },
+    };
+  }),
 });

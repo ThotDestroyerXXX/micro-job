@@ -137,4 +137,21 @@ export const profileRouter = createTRPCRouter({
         .where(eq(user.id, userId))
         .execute();
     }),
+
+  getOne: baseProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input }) => {
+      const { userId } = input;
+      const userData = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, userId))
+        .execute();
+
+      if (userData.length === 0) {
+        throw new Error("User not found");
+      }
+
+      return userData[0];
+    }),
 });
