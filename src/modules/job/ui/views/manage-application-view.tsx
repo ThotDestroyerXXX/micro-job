@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { trpc } from "@/trpc/client";
 import { getJobStatus } from "../../utils/job-status";
+import { useDebouncedCallback } from "use-debounce";
 import ManageApplicationHeader from "../sections/manage-applications/manage-application-header-section";
 import SummaryStats from "../sections/manage-applications/summary-stats-section";
 import JobFilters from "../sections/manage-applications/job-filters";
@@ -13,6 +14,14 @@ export default function ManageApplicationView() {
   const [sortBy, setSortBy] = useState("newest");
   const [activeTab, setActiveTab] = useState("all");
   const [data] = trpc.job.getOwnJobs.useSuspenseQuery();
+  const debouncedSearch = useDebouncedCallback(
+    // function
+    (value) => {
+      setSearchQuery(value);
+    },
+    // delay in ms
+    500
+  );
 
   const getJobsByTab = (tab: string) => {
     return data.jobs.filter((job) => {
@@ -81,10 +90,9 @@ export default function ManageApplicationView() {
         <SummaryStats />
 
         <JobFilters
-          searchQuery={searchQuery}
           selectedCategory={selectedCategory}
           sortBy={sortBy}
-          onSearchChange={setSearchQuery}
+          onSearchChange={debouncedSearch}
           onCategoryChange={setSelectedCategory}
           onSortChange={setSortBy}
         />

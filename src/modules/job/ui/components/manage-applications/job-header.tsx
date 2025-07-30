@@ -24,7 +24,7 @@ export default function JobHeader({
   statusInfo,
   jobId,
   onAction,
-}: JobHeaderProps) {
+}: Readonly<JobHeaderProps>) {
   return (
     <div className='flex items-start justify-between mb-4'>
       <div className='flex-1'>

@@ -1,11 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import YearsSelect from "./years-select";
-
-interface Skill {
-  name: string;
-  years: number;
-}
+import { Skill } from "@/lib/utils";
 
 interface SkillCardProps {
   skill: Skill;

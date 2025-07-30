@@ -6,11 +6,7 @@ import { SkillsHeader } from "../components/skills-header";
 import { AddSkillForm } from "../components/add-skill-form";
 import { SkillsGrid } from "../components/skills-grid";
 import { useSkillsManagement } from "../../hooks/use-profile-hook";
-
-interface Skill {
-  name: string;
-  years: number;
-}
+import { getExperienceLevel, Skill } from "@/lib/utils";
 
 interface SkillSectionProps {
   profileData: Skill[];
@@ -96,14 +92,3 @@ export default function SkillSection({
 }
 
 // Helper function to calculate experience level
-function getExperienceLevel(skills: Skill[]): string {
-  if (skills.length === 0) return "Beginner";
-
-  const avgYears =
-    skills.reduce((sum, skill) => sum + skill.years, 0) / skills.length;
-
-  if (avgYears >= 5) return "Expert";
-  if (avgYears >= 3) return "Advanced";
-  if (avgYears >= 1) return "Intermediate";
-  return "Beginner";
-}

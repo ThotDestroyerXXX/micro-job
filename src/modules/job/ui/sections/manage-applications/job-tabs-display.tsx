@@ -27,7 +27,7 @@ export default function JobTabsDisplay({
   onTabChange,
   filteredJobs,
   allJobs,
-}: JobTabsDisplayProps) {
+}: Readonly<JobTabsDisplayProps>) {
   const getTabCount = (tabType: string) => {
     switch (tabType) {
       case "all":

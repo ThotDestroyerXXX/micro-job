@@ -10,7 +10,7 @@ interface ExpirationWarningProps {
 export default function ExpirationWarning({
   expiresAt,
   isActive,
-}: ExpirationWarningProps) {
+}: Readonly<ExpirationWarningProps>) {
   if (!isActive || !expiresAt) {
     return null;
   }

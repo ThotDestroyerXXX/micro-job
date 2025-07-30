@@ -1,6 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { differenceInDays, differenceInHours } from "date-fns";
 import { twMerge } from "tailwind-merge";
+export interface Skill {
+  name: string;
+  years: number;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -93,4 +97,16 @@ export function getTimeAgo(createdAt: string | Date): string {
     const daysDiff = differenceInDays(now, created);
     return `${daysDiff}d ago`;
   }
+}
+
+export function getExperienceLevel(skills: Skill[]): string {
+  if (skills.length === 0) return "Beginner";
+
+  const avgYears =
+    skills.reduce((sum, skill) => sum + skill.years, 0) / skills.length;
+
+  if (avgYears >= 5) return "Expert";
+  if (avgYears >= 3) return "Advanced";
+  if (avgYears >= 1) return "Intermediate";
+  return "Beginner";
 }

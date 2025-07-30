@@ -384,4 +384,96 @@ export const jobRouter = createTRPCRouter({
       },
     };
   }),
+
+  getOwnJob: protectedProcedure
+    .input(z.object({ jobId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const { jobId } = input;
+      if (!ctx.userId) {
+        throw new Error("User is not authenticated.");
+      }
+
+      // Get the job details first
+      const jobDetails = await db
+        .select()
+        .from(job)
+        .where(and(eq(job.id, jobId), eq(job.userId, ctx.userId)))
+        .execute();
+
+      if (jobDetails.length === 0) {
+        throw new Error(
+          "Job not found or you don't have permission to view it."
+        );
+      }
+
+      // Get all applications for this job with user data
+      const applications = await db
+        .select({
+          application: job_application,
+          user: user,
+        })
+        .from(job_application)
+        .innerJoin(user, eq(job_application.userId, user.id))
+        .where(eq(job_application.jobId, jobId))
+        .orderBy(desc(job_application.created_at))
+        .execute();
+
+      // Get application counts
+      const [totalCount, acceptedCount, pendingCount, rejectedCount] =
+        await Promise.all([
+          // Total applications
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(eq(job_application.jobId, jobId))
+            .execute(),
+
+          // Accepted applications
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.jobId, jobId),
+                eq(job_application.status, "accepted")
+              )
+            )
+            .execute(),
+
+          // Pending applications (status = "applied")
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.jobId, jobId),
+                eq(job_application.status, "applied")
+              )
+            )
+            .execute(),
+
+          // Rejected applications
+          db
+            .select({ count: count() })
+            .from(job_application)
+            .where(
+              and(
+                eq(job_application.jobId, jobId),
+                eq(job_application.status, "rejected")
+              )
+            )
+            .execute(),
+        ]);
+
+      return {
+        job: jobDetails[0],
+        applications: applications,
+        applicationCounts: {
+          total: totalCount[0]?.count || 0,
+          accepted: acceptedCount[0]?.count || 0,
+          pending: pendingCount[0]?.count || 0,
+          rejected: rejectedCount[0]?.count || 0,
+        },
+      };
+    }),
 });

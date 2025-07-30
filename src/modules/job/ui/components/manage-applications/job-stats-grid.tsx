@@ -10,7 +10,7 @@ interface JobStatsGridProps {
   };
 }
 
-export default function JobStatsGrid({ jobs }: JobStatsGridProps) {
+export default function JobStatsGrid({ jobs }: Readonly<JobStatsGridProps>) {
   const getStatValue = (key: string) => {
     switch (key) {
       case "pay_amount":

@@ -1,9 +1,5 @@
+import { Skill } from "@/lib/utils";
 import { SkillCard } from "./skill-card";
-
-interface Skill {
-  name: string;
-  years: number;
-}
 
 interface SkillsGridProps {
   skills: Skill[];

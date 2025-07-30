@@ -5,7 +5,10 @@ interface JobSkillsProps {
   maxVisible?: number;
 }
 
-export default function JobSkills({ skills, maxVisible = 3 }: JobSkillsProps) {
+export default function JobSkills({
+  skills,
+  maxVisible = 3,
+}: Readonly<JobSkillsProps>) {
   if (!skills || skills.length === 0) {
     return null;
   }

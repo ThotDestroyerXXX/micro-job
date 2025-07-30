@@ -17,7 +17,7 @@ interface JobActionsDropdownProps {
 export default function JobActionsDropdown({
   jobId,
   onAction,
-}: JobActionsDropdownProps) {
+}: Readonly<JobActionsDropdownProps>) {
   const handleAction = (actionId: string) => {
     onAction?.(jobId, actionId);
   };
