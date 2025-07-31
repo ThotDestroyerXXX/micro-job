@@ -21,7 +21,7 @@ export default function ProfileView({
         />
         <SkillSection
           profileData={
-            user.skills as unknown as { name: string; years: number }[]
+            (user.skills as unknown as { name: string; years: number }[]) ?? []
           }
         />
         <LocationAvailabilitySection user={user} />

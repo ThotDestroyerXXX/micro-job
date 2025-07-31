@@ -211,3 +211,21 @@ export const JOB_FORM_FIELDS = [
     type: "date",
   },
 ] as const;
+
+export const jobApplicationSchema = z.object({
+  coverLetter: z
+    .string()
+    .min(20, "Cover letter must be at least 20 characters")
+    .max(1000, "Cover letter must not exceed 1000 characters"),
+});
+
+export type JobApplicationData = z.infer<typeof jobApplicationSchema>;
+
+export const JOB_APPLICATION_FORM_FIELDS = [
+  {
+    name: "coverLetter" as const,
+    label: "Cover Letter",
+    placeholder: "Tell the employer why you're interested in this job...",
+    type: "textarea",
+  },
+] as const;

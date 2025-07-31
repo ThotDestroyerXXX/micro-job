@@ -12,6 +12,7 @@ import NotFound from "@/components/not-found";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { trpc } from "@/trpc/client";
+import { formatDateShort } from "@/lib/utils";
 
 function UpcomingJobSkeleton() {
   return (
@@ -59,7 +60,7 @@ function UpcomingJobSuspense() {
           {upcomingJobs.map((job) => (
             <div
               key={job.job_application.id}
-              className='flex items-center justify-between p-4 bg-gray-50 rounded-lg'
+              className='flex items-center justify-between p-4 bg-gray-50 rounded-lg sm:flex-row flex-col'
             >
               <div className='flex items-center space-x-4'>
                 <div className='w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center'>
@@ -70,13 +71,13 @@ function UpcomingJobSuspense() {
                   <p className='text-sm text-gray-600'>with {job.employer}</p>
                 </div>
               </div>
-              <div className='text-right'>
+              <div className='text-right sm:flex-col flex-row flex items-center gap-2 sm:gap-0'>
                 <p className='font-medium text-gray-900'>
-                  {job.job.start_date}
+                  {formatDateShort(job.job.start_date ?? "")}
                   {", "}
                   {job.job.schedule?.[0].startTime.toString() ?? "TBA"}
                 </p>
-                <p className='text-sm text-green-600'>{job.job.pay_amount}</p>
+                <p className='text-sm text-green-600'>$ {job.job.pay_amount}</p>
               </div>
               <Badge
                 variant={
@@ -84,6 +85,7 @@ function UpcomingJobSuspense() {
                     ? "default"
                     : "secondary"
                 }
+                className='rounded-full'
               >
                 {job.job_application.status}
               </Badge>

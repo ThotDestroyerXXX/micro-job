@@ -1,15 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DollarSign,
-  Clock,
-  MapPin,
-  Shield,
-  Star,
-  ChevronRight,
-} from "lucide-react";
+import { DollarSign, Clock, MapPin, Shield, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { InferSelectModel } from "drizzle-orm";
 import { job as jobTable, user } from "@/db/schema"; // Adjust the import path as needed
 
@@ -46,14 +38,16 @@ const JobCard = ({
         className={`h-full ${viewMode === "list" ? "flex-1 w-20 p-6" : " pb-6"}`}
       >
         <div
-          className={
-            viewMode === "list"
-              ? "flex items-start gap-6 min-w-0"
-              : "flex flex-col h-full"
-          }
+          className={`flex-col
+            ${
+              viewMode === "list"
+                ? "flex items-start gap-6 min-w-0"
+                : "flex flex-col h-full"
+            }
+          `}
         >
           {/* Main Content */}
-          <div className={viewMode === "list" ? "flex-1 min-w-0" : ""}>
+          <div className={viewMode === "list" ? "flex-1 min-w-0 w-full" : ""}>
             {/* Header Section */}
             <div className='flex items-start justify-between mb-4 gap-4'>
               <div className='flex-1 min-w-0'>
@@ -137,50 +131,16 @@ const JobCard = ({
           </div>
 
           {/* Skills & Action - Side panel for list view */}
-          <div
-            className={`flex gap-4 max-[400px]:flex-col ${
-              viewMode === "list"
-                ? "flex-col items-end justify-between min-w-[200px] shrink-0"
-                : "items-center justify-between mt-auto"
-            }`}
-          >
-            <div
-              className={`flex gap-2 overflow-hidden w-full ${
-                viewMode === "list" ? "flex-wrap justify-end" : "flex-nowrap"
-              }`}
-            >
-              {job.required_skills
-                ?.slice(0, viewMode === "list" ? 3 : 6)
-                .map((skill) => (
-                  <Badge
-                    key={skill}
-                    variant='secondary'
-                    className='text-xs bg-blue-50 text-blue-700 hover:bg-blue-100'
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-            </div>
-            <div
-              className={`flex gap-2 ${
-                viewMode === "list" ? "flex-col" : "items-center h-full"
-              }`}
-            >
-              <Button
-                variant='outline'
-                size='sm'
-                className='text-blue-600 border-blue-200 hover:bg-blue-50 bg-transparent whitespace-nowrap'
+          <div className={`flex gap-2 flex-nowrap overflow-hidden w-full`}>
+            {job.required_skills?.map((skill) => (
+              <Badge
+                key={skill}
+                variant='secondary'
+                className='text-xs bg-blue-50 text-blue-700 hover:bg-blue-100'
               >
-                View Details
-              </Button>
-              <Button
-                size='sm'
-                className='bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg whitespace-nowrap'
-              >
-                Apply Now
-                <ChevronRight className='h-4 w-4 ml-1' />
-              </Button>
-            </div>
+                {skill}
+              </Badge>
+            ))}
           </div>
         </div>
       </CardContent>

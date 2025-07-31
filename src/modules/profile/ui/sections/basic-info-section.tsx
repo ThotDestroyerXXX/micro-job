@@ -86,7 +86,7 @@ export default function BasicInfoSection({
                         <p className='text-muted-foreground'>{user.username}</p>
                       </div>
 
-                      <p className='text-gray-600'>
+                      <p className='text-gray-600 break-all'>
                         {user.bio && user.bio.length > 0
                           ? user.bio
                           : "No bio written yet..."}
@@ -99,7 +99,7 @@ export default function BasicInfoSection({
                         </div>
                         <div className='flex items-center gap-2'>
                           <MapPin className='h-4 w-4 text-muted-foreground' />
-                          <span>
+                          <span className='break-all'>
                             {user.location && user.location.length > 0
                               ? user.location
                               : "No location"}

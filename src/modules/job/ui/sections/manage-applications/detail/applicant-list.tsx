@@ -7,7 +7,7 @@ import { trpc } from "@/trpc/client";
 export default function ApplicantList({ id }: Readonly<{ id: string }>) {
   const [data] = trpc.job.getOwnJob.useSuspenseQuery({ jobId: id });
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 grid grid-cols-1 md:grid-cols-2'>
       {data.applications.length === 0 ? (
         <Card className='border-0 shadow-lg bg-white p-12 text-center'>
           <Users className='h-16 w-16 mx-auto mb-4 text-gray-400' />

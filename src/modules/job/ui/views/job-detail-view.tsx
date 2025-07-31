@@ -2,7 +2,10 @@ import JobDetailBasicInformationCard from "../sections/detail/job-detail-basic-i
 import JobDetailContentSection from "../sections/detail/job-detail-content-section";
 import JobDetailSidebar from "../sections/detail/job-detail-sidebar";
 
-export default function JobDetailView({ id }: Readonly<{ id: string }>) {
+export default function JobDetailView({
+  id,
+  userId,
+}: Readonly<{ id: string; userId: string | undefined }>) {
   return (
     <div className='min-h-screen'>
       <div className='max-w-6xl mx-auto p-6'>
@@ -11,7 +14,7 @@ export default function JobDetailView({ id }: Readonly<{ id: string }>) {
             <JobDetailBasicInformationCard id={id} />
             <JobDetailContentSection id={id} />
           </div>
-          <JobDetailSidebar id={id} />
+          <JobDetailSidebar id={id} userId={userId} />
         </div>
       </div>
     </div>

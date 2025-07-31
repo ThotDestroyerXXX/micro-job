@@ -14,7 +14,7 @@ export function SkillsGrid({
   onRemoveSkill,
   onUpdateSkillYears,
 }: Readonly<SkillsGridProps>) {
-  if (skills.length === 0) {
+  if (skills && skills.length <= 0) {
     return (
       <div
         className={`col-span-full text-center py-8 text-muted-foreground ${

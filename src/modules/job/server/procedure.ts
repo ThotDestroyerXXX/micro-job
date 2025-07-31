@@ -1,7 +1,13 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import db from "@/db";
 import { z } from "zod";
-import { job, job_favorite, job_application, user } from "@/db/schema";
+import {
+  job,
+  job_favorite,
+  job_application,
+  user,
+  user_availability,
+} from "@/db/schema";
 import { v4 as uuidv4 } from "uuid";
 import { jobSchema } from "../config/job.config";
 import { time } from "drizzle-orm/pg-core";
@@ -206,6 +212,17 @@ export const jobRouter = createTRPCRouter({
       }
       const { jobId } = input;
 
+      const isApplied = await db
+        .select()
+        .from(job_application)
+        .where(
+          and(
+            eq(job_application.jobId, jobId),
+            eq(job_application.userId, ctx.userId)
+          )
+        )
+        .execute();
+
       // Get job details with user and saved status
       const jobDetails = await db
         .select({
@@ -266,6 +283,7 @@ export const jobRouter = createTRPCRouter({
           totalPostedJobs: postedJobsCount[0]?.count || 0,
           totalCompletedJobs: completedJobsCount[0]?.count || 0,
         },
+        isApplied: isApplied.length > 0, // Convert to boolean
       };
     }),
 
@@ -275,7 +293,7 @@ export const jobRouter = createTRPCRouter({
     }
     const currentDate = new Date().toISOString().split("T")[0];
 
-    // Get jobs with application counts
+    // Get jobs with application counts - ONLY for jobs posted by the authenticated user
     const jobs = await db
       .select({
         job: job,
@@ -283,6 +301,7 @@ export const jobRouter = createTRPCRouter({
       })
       .from(job)
       .leftJoin(job_application, eq(job_application.jobId, job.id))
+      .where(eq(job.userId, ctx.userId)) // Filter by user's own jobs
       .groupBy(job.id)
       .orderBy(desc(job.createdAt))
       .execute();
@@ -418,6 +437,25 @@ export const jobRouter = createTRPCRouter({
         .orderBy(desc(job_application.created_at))
         .execute();
 
+      // Get user availability for each applicant
+      const applicationsWithAvailability = await Promise.all(
+        applications.map(async (app) => {
+          const availability = await db
+            .select()
+            .from(user_availability)
+            .where(eq(user_availability.userId, app.user.id))
+            .execute();
+
+          return {
+            ...app,
+            user: {
+              ...app.user,
+              availability: availability,
+            },
+          };
+        })
+      );
+
       // Get application counts
       const [totalCount, acceptedCount, pendingCount, rejectedCount] =
         await Promise.all([
@@ -467,7 +505,7 @@ export const jobRouter = createTRPCRouter({
 
       return {
         job: jobDetails[0],
-        applications: applications,
+        applications: applicationsWithAvailability,
         applicationCounts: {
           total: totalCount[0]?.count || 0,
           accepted: acceptedCount[0]?.count || 0,
@@ -475,5 +513,49 @@ export const jobRouter = createTRPCRouter({
           rejected: rejectedCount[0]?.count || 0,
         },
       };
+    }),
+
+  applyToJob: protectedProcedure
+    .input(
+      z.object({
+        jobId: z.string(),
+        coverLetter: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { jobId, coverLetter } = input;
+      if (!ctx.userId) {
+        throw new Error("User is not authenticated.");
+      }
+
+      // Check if the user has already applied to this job
+      const existingApplication = await db
+        .select()
+        .from(job_application)
+        .where(
+          and(
+            eq(job_application.jobId, jobId),
+            eq(job_application.userId, ctx.userId)
+          )
+        )
+        .execute();
+
+      if (existingApplication.length > 0) {
+        throw new Error("You have already applied to this job.");
+      }
+
+      // Create a new application
+      await db
+        .insert(job_application)
+        .values({
+          id: uuidv4(),
+          userId: ctx.userId,
+          jobId: jobId,
+          application_reason: coverLetter,
+          status: "applied", // Default status when applying
+        })
+        .execute();
+
+      return { message: "Application submitted successfully" };
     }),
 });

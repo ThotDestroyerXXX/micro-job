@@ -8,6 +8,8 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import NotFound from "@/components/not-found";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCategoryGradient } from "@/lib/job-category-gradients";
+import { getTimeAgo } from "@/lib/utils";
 
 const recentActivityBadgeVariant = (status: string) => {
   switch (status) {
@@ -62,10 +64,12 @@ function RecentActivitySuspense() {
         recentActivity.map((jobApplication) => (
           <Card
             key={jobApplication.job_application.id}
-            className='hover:shadow-md transition-shadow border-0 bg-white'
+            className='hover:shadow-md transition-shadow border-0 bg-white p-0 pb-6'
           >
-            <div className={`h-1 bg-gradient-to-r rounded-t-lg`} />
-            <CardContent className='p-4'>
+            <div
+              className={`h-1 bg-gradient-to-r rounded-t-lg ${getCategoryGradient(jobApplication.job.category ?? "Other").gradient}`}
+            />
+            <CardContent>
               <div className='flex items-center justify-between'>
                 <div className='flex-1'>
                   <h3 className='font-medium text-gray-900'>
@@ -85,12 +89,12 @@ function RecentActivitySuspense() {
                     </span>
                   </div>
                 </div>
-                <div className='text-right'>
+                <div className='items-center text-center'>
                   <Badge
                     variant={recentActivityBadgeVariant(
                       jobApplication.job_application.status ?? "Not Found"
                     )}
-                    className='mb-2'
+                    className='mb-2 rounded-full'
                   >
                     {jobApplication.job_application.status === "applied" &&
                       "Applied"}
@@ -99,9 +103,13 @@ function RecentActivitySuspense() {
                   </Badge>
                   <p className='text-xs text-gray-500'>
                     {jobApplication.job_application.status === "applied" &&
-                      jobApplication.job_application.applied_at?.toISOString()}
+                      getTimeAgo(
+                        jobApplication.job_application.applied_at ?? ""
+                      )}
                     {jobApplication.job_application.status === "in progress" &&
-                      jobApplication.job_application.accepted_at?.toISOString()}
+                      getTimeAgo(
+                        jobApplication.job_application.accepted_at ?? ""
+                      )}
                   </p>
                 </div>
               </div>

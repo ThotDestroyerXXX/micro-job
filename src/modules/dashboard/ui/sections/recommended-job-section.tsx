@@ -78,12 +78,14 @@ function RecommendedJobSuspense() {
                   <DollarSign className='h-4 w-4' />
                   {job.job.pay_amount}
                 </span>
-                <span className='flex items-center gap-1 text-gray-500 break-all'>
+                <span className='flex items-center gap-1 text-gray-500 min-w-0'>
                   <MapPin className='h-4 w-4 shrink-0' />
-                  {addressDisplay(
-                    job.job.location_type ?? "",
-                    job.job.address ?? "N/A"
-                  )}
+                  <span className='truncate'>
+                    {addressDisplay(
+                      job.job.location_type ?? "",
+                      job.job.address ?? "N/A"
+                    )}
+                  </span>
                 </span>
                 <span className='flex items-center gap-1 text-gray-500 shrink-0'>
                   <Clock className='h-4 w-4' />
@@ -91,7 +93,7 @@ function RecommendedJobSuspense() {
                 </span>
               </div>
               <div className='flex items-center justify-between'>
-                <div className='flex gap-1'>
+                <div className='flex gap-1 overflow-hidden'>
                   {job.job.required_skills?.map((skill) => (
                     <Badge key={skill} variant='outline' className='text-xs'>
                       {skill}

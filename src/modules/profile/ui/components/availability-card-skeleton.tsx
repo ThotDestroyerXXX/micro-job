@@ -8,9 +8,9 @@ export default function AvailabilityCardSkeleton() {
         <Skeleton className='w-1/6 h-6 bg-gray-200 rounded'></Skeleton>
       </div>
       <div className='space-y-2'>
-        {[...Array(7)].map((tes) => (
+        {[...Array(7)].map((tes, index) => (
           <Skeleton
-            key={tes}
+            key={`${tes}-${index}`}
             className='h-4 bg-gray-200 rounded w-full'
           ></Skeleton>
         ))}

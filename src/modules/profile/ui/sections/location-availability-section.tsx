@@ -29,7 +29,7 @@ export default function LocationAvailabilitySection({
       <CardContent className='space-y-4'>
         <div>
           <h4 className='font-medium mb-2'>Service Area</h4>
-          <p className='text-gray-600'>
+          <p className='text-gray-600 break-all'>
             {user.location && user.location.length > 0
               ? user.location
               : "No location specified."}

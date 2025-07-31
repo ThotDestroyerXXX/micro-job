@@ -1,5 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { JobFormData, jobSchema } from "../config/job.config";
+import {
+  JobApplicationData,
+  jobApplicationSchema,
+  JobFormData,
+  jobSchema,
+} from "../config/job.config";
 import { useForm } from "react-hook-form";
 import {
   experienceLevel,
@@ -227,3 +232,42 @@ export function useToggleSaveJobForDetail(jobId: string) {
 
   return { toggle, isPending };
 }
+
+export const useSubmitApplicationForm = () => {
+  const utils = trpc.useUtils();
+  const router = useRouter();
+  const form = useForm<JobApplicationData>({
+    resolver: zodResolver(jobApplicationSchema),
+    defaultValues: {
+      coverLetter: "",
+    },
+  });
+
+  const { mutateAsync } = trpc.job.applyToJob.useMutation({
+    onSuccess: async () => {
+      form.reset();
+      await utils.invalidate();
+      toast.success("Job application submitted successfully");
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      console.error("Failed to apply to job:", error);
+      toast.error("Failed to apply to job");
+    },
+  });
+
+  const onSubmit = async (values: JobApplicationData, jobId: string) => {
+    try {
+      await mutateAsync({
+        ...values,
+        jobId,
+      });
+
+      console.log("Job applied successfully:", values);
+    } catch (error) {
+      console.error("Failed to apply to job:", error);
+    }
+  };
+
+  return { form, onSubmit, isLoading: form.formState.isSubmitting };
+};
