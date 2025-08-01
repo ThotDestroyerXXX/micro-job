@@ -99,6 +99,14 @@ export function getTimeAgo(createdAt: string | Date): string {
   }
 }
 
+export function getTimeAgoNumber(createdAt: string | Date): number {
+  const now = new Date();
+  const created = new Date(createdAt);
+
+  const hoursDiff = differenceInHours(now, created);
+  return hoursDiff;
+}
+
 export function getExperienceLevel(skills: Skill[]): string {
   if (skills.length === 0) return "Beginner";
 

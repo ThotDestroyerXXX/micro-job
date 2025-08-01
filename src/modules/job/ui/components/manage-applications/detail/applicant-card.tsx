@@ -16,16 +16,22 @@ import UserAvatar from "@/components/user-avatar";
 import { getApplicationStatusColor } from "@/modules/job/utils/job-status";
 import { formatDateShort, getExperienceLevel } from "@/lib/utils";
 import ApplicantDetailModal from "./applicant-detail-modal";
+import { useHandleApplicationStatusChange } from "@/modules/job/hooks/use-job-hook";
 
 export default function ApplicantCard({
   applicant,
   jobApplication,
+  start_date,
+  end_date,
 }: Readonly<{
   applicant: InferSelectModel<typeof user> & {
     availability: InferSelectModel<typeof user_availability>[];
   };
   jobApplication: InferSelectModel<typeof job_application>;
+  start_date: string | Date | null;
+  end_date: string | Date | null;
 }>) {
+  const { handleStatusChange } = useHandleApplicationStatusChange();
   return (
     <Card className='hover:shadow-lg transition-all duration-300 border-0 bg-white w-full'>
       <CardContent>
@@ -41,9 +47,13 @@ export default function ApplicantCard({
                     {applicant.name}
                   </h3>
                   <Badge
-                    className={`${getApplicationStatusColor(jobApplication.status ?? "")} border-0 shrink-0`}
+                    className={`${getApplicationStatusColor(jobApplication.status ?? "", start_date ?? "", end_date ?? "").color} border-0 shrink-0`}
                   >
-                    {jobApplication.status ?? "Unknown"}
+                    {getApplicationStatusColor(
+                      jobApplication.status ?? "",
+                      start_date ?? "",
+                      end_date ?? ""
+                    ).status ?? "Unknown"}
                   </Badge>
                 </div>
                 <div className='flex items-center gap-4 text-sm text-gray-600 mb-2 min-w-0'>
@@ -112,7 +122,9 @@ export default function ApplicantCard({
             {/* Action Buttons */}
             <div className='flex items-center gap-3 flex-wrap'>
               <Button
-                // onClick={() => handleStatusChange(applicant.id, "accepted")}
+                onClick={() =>
+                  handleStatusChange(jobApplication.id, "accepted")
+                }
                 className='bg-green-600 hover:bg-green-700 text-white flex-1'
                 size='sm'
               >
@@ -120,7 +132,9 @@ export default function ApplicantCard({
                 Accept
               </Button>
               <Button
-                // onClick={() => handleStatusChange(applicant.id, "rejected")}
+                onClick={() =>
+                  handleStatusChange(jobApplication.id, "rejected")
+                }
                 variant='outline'
                 className='border-red-200 text-red-600 hover:bg-red-50 bg-transparent flex-1'
                 size='sm'

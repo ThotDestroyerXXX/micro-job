@@ -10,6 +10,7 @@ import NotFound from "@/components/not-found";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCategoryGradient } from "@/lib/job-category-gradients";
 import { getTimeAgo } from "@/lib/utils";
+import { getApplicationStatusColor } from "@/modules/job/utils/job-status";
 
 const recentActivityBadgeVariant = (status: string) => {
   switch (status) {
@@ -90,27 +91,37 @@ function RecentActivitySuspense() {
                   </div>
                 </div>
                 <div className='items-center text-center'>
-                  <Badge
-                    variant={recentActivityBadgeVariant(
-                      jobApplication.job_application.status ?? "Not Found"
-                    )}
-                    className='mb-2 rounded-full'
-                  >
-                    {jobApplication.job_application.status === "applied" &&
-                      "Applied"}
-                    {jobApplication.job_application.status === "in progress" &&
-                      "Interview"}
-                  </Badge>
-                  <p className='text-xs text-gray-500'>
-                    {jobApplication.job_application.status === "applied" &&
-                      getTimeAgo(
-                        jobApplication.job_application.applied_at ?? ""
-                      )}
-                    {jobApplication.job_application.status === "in progress" &&
-                      getTimeAgo(
-                        jobApplication.job_application.accepted_at ?? ""
-                      )}
-                  </p>
+                  {(() => {
+                    const statusInfo = getApplicationStatusColor(
+                      jobApplication.job_application.status ?? "Not Found",
+                      jobApplication.job.start_date ?? "",
+                      jobApplication.job.end_date ?? ""
+                    );
+
+                    return (
+                      <>
+                        <Badge
+                          variant={recentActivityBadgeVariant(
+                            jobApplication.job_application.status ?? "Not Found"
+                          )}
+                          className='mb-2 rounded-full'
+                        >
+                          {statusInfo.status}
+                        </Badge>
+                        <p className='text-xs text-gray-500'>
+                          {statusInfo.status === "applied" &&
+                            getTimeAgo(
+                              jobApplication.job_application.applied_at ?? ""
+                            )}
+                          {(statusInfo.status === "in progress" ||
+                            statusInfo.status === "accepted") &&
+                            getTimeAgo(
+                              jobApplication.job_application.accepted_at ?? ""
+                            )}
+                        </p>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </CardContent>

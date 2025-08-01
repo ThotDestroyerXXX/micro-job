@@ -271,3 +271,31 @@ export const useSubmitApplicationForm = () => {
 
   return { form, onSubmit, isLoading: form.formState.isSubmitting };
 };
+
+export const useHandleApplicationStatusChange = () => {
+  const utils = trpc.useUtils();
+
+  const { mutateAsync } = trpc.job.updateApplicationStatus.useMutation({
+    onSuccess: async (data) => {
+      await utils.invalidate();
+      toast.success(data.message);
+    },
+    onError: (error) => {
+      console.error("Failed to update application status:", error);
+      toast.error("Failed to update application status");
+    },
+  });
+
+  const handleStatusChange = async (
+    applicationId: string,
+    newStatus: "accepted" | "rejected"
+  ) => {
+    try {
+      await mutateAsync({ applicationId, newStatus });
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
+  };
+
+  return { handleStatusChange };
+};

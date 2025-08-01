@@ -558,4 +558,27 @@ export const jobRouter = createTRPCRouter({
 
       return { message: "Application submitted successfully" };
     }),
+
+  updateApplicationStatus: protectedProcedure
+    .input(
+      z.object({
+        applicationId: z.string(),
+        newStatus: z.enum(["accepted", "rejected"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (!ctx.userId) {
+        throw new Error("User is not authenticated.");
+      }
+      const { applicationId, newStatus } = input;
+
+      // Update the application status in the database
+      await db
+        .update(job_application)
+        .set({ status: newStatus, accepted_at: new Date() })
+        .where(eq(job_application.id, applicationId))
+        .execute();
+
+      return { message: "Application status updated successfully" };
+    }),
 });

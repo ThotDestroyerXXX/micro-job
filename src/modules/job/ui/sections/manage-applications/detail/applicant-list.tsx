@@ -22,6 +22,8 @@ export default function ApplicantList({ id }: Readonly<{ id: string }>) {
             key={applicant.application.id}
             applicant={applicant.user}
             jobApplication={applicant.application}
+            start_date={data.job.start_date}
+            end_date={data.job.end_date}
           />
         ))
       )}
